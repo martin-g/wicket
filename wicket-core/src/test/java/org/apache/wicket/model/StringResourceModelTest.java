@@ -279,6 +279,18 @@ public class StringResourceModelTest extends WicketTestCase
 		assertFalse(wrappedModel.isAttached());
 	}
 
+	/**
+	 * https://issues.apache.org/jira/browse/WICKET-6801
+	 */
+	@Test
+	void lambdaModelShouldPreserveIComponentAssignedModel()
+	{
+		StringResourceModel model = new StringResourceModel("simple.text");
+		page.setDefaultModel(model.map(String::toUpperCase));
+		final Object object = page.getDefaultModel().getObject();
+		assertEquals("Simple text".toUpperCase(), object, "Text should be as expected");
+	}
+
 	private static class Wicket5176Model implements IModel
 	{
 		private boolean attached = true;

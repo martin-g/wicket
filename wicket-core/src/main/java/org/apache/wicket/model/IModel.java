@@ -20,6 +20,7 @@ package org.apache.wicket.model;
 import org.apache.wicket.util.lang.Args;
 import org.danekja.java.util.function.serializable.SerializableBiConsumer;
 import org.danekja.java.util.function.serializable.SerializableBiFunction;
+import org.danekja.java.util.function.serializable.SerializableConsumer;
 import org.danekja.java.util.function.serializable.SerializableFunction;
 import org.danekja.java.util.function.serializable.SerializablePredicate;
 import org.danekja.java.util.function.serializable.SerializableSupplier;
@@ -101,28 +102,27 @@ public interface IModel<T> extends IDetachable
 	default IModel<T> filter(SerializablePredicate<? super T> predicate)
 	{
 		Args.notNull(predicate, "predicate");
-		return new IModel<T>()
-		{
-			@Override
-			public T getObject()
-			{
-				T object = IModel.this.getObject();
-				if (object != null && predicate.test(object))
-				{
-					return object;
-				}
-				else
-				{
-					return null;
-				}
-			}
 
-			@Override
-			public void detach()
+		SerializableSupplier<T> getObject = () -> {
+			T object = IModel.this.getObject();
+			if (object != null && predicate.test(object))
 			{
-				IModel.this.detach();
+				return object;
+			}
+			else
+			{
+				return null;
 			}
 		};
+
+		SerializableConsumer<T> setObject = (object) -> {};
+		SerializableSupplier<Void> detach = () -> {
+			IModel.this.detach();
+			return null;
+		};
+		SerializableFunction<T, T> mapper = (object) -> object;
+
+		return Models.smartModel(this, getObject, setObject, detach, mapper);
 	}
 
 	/**
@@ -137,26 +137,23 @@ public interface IModel<T> extends IDetachable
 	default <R> IModel<R> map(SerializableFunction<? super T, R> mapper)
 	{
 		Args.notNull(mapper, "mapper");
-		return new IModel<R>() {
-			@Override
-			public R getObject()
-			{
-				T object = IModel.this.getObject();
-				if (object == null)
-				{
-					return null;
-				} else
-				{
-					return mapper.apply(object);
-				}
-			}
 
-			@Override
-			public void detach()
-			{
-				IModel.this.detach();
+		SerializableSupplier<R> getObject = () -> {
+			T object = IModel.this.getObject();
+			if (object == null) {
+				return null;
+			} else {
+				return mapper.apply(object);
 			}
 		};
+
+		SerializableConsumer<R> setObject = (object) -> {};
+		SerializableSupplier<Void> detach = () -> {
+			IModel.this.detach();
+			return null;
+		};
+
+		return Models.smartModel(this, getObject, setObject, detach, mapper);
 	}
 
 	/**
@@ -178,28 +175,28 @@ public interface IModel<T> extends IDetachable
 	{
 		Args.notNull(combiner, "combiner");
 		Args.notNull(other, "other");
-		return new IModel<R>() {
-			@Override
-			public R getObject()
-			{
-				T t = IModel.this.getObject();
-				U u = other.getObject();
-				if (t != null && u != null)
-				{
-					return combiner.apply(t, u);
-				} else
-				{
-					return null;
-				}
-			}
 
-			@Override
-			public void detach()
+
+		SerializableSupplier<R> getObject = () -> {
+			T t = IModel.this.getObject();
+			U u = other.getObject();
+			if (t != null && u != null)
 			{
-				other.detach();
-				IModel.this.detach();
+				return combiner.apply(t, u);
+			} else
+			{
+				return null;
 			}
 		};
+
+		SerializableConsumer<R> setObject = (object) -> {};
+		SerializableSupplier<Void> detach = () -> {
+			other.detach();
+			IModel.this.detach();
+			return null;
+		};
+
+		return Models.smartModel(this, getObject, setObject, detach, null);
 	}
 
 	/**
@@ -215,7 +212,7 @@ public interface IModel<T> extends IDetachable
 	default <R> IModel<R> flatMap(SerializableFunction<? super T, IModel<R>> mapper)
 	{
 		Args.notNull(mapper, "mapper");
-		return new IModel<R>()
+		return new IModel<>()
 		{
 			private static final long serialVersionUID = 1L;
 
