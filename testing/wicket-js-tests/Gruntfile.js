@@ -130,8 +130,7 @@ module.exports = function(grunt) {
 					env: {
 					  TZ: "UTC"
 					},
-					args: ["--no-sandbox"],
-					executablePath: '/usr/bin/chromium-browser'
+					args: ["--no-sandbox"]
 				}
 			}
 		},
