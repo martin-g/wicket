@@ -40,6 +40,7 @@ before_install:
   - export PATH="$JAVA_HOME/bin:$PATH"
   - java -version
   - mvn -version
+  - ln -s `which which google-chrome-stable` /usr/bin/chromium 
   - google-chrome-stable --headless --disable-gpu --remote-debugging-port=9222 http://localhost &
 
 
