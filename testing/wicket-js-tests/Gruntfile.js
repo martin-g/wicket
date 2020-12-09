@@ -124,6 +124,15 @@ module.exports = function(grunt) {
 						'http://localhost:38887/test/js/amd.html?3.5.1'
 					]
 				}
+			},
+			options: {
+				puppeteer: {
+					env: {
+					  TZ: "UTC"
+					},
+					args: ["--no-sandbox"],
+					executablePath: '/usr/bin/chromium-browser'
+				}
 			}
 		},
 
