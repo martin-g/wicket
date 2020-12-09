@@ -17,7 +17,9 @@
 
 os: linux
 dist: focal
-
+group: edge
+arch: arm64-graviton2
+virm: lxd
 arch:
   - arm64
 
@@ -26,7 +28,7 @@ addons:
     packages:
       - openjdk-11-jdk
       - maven
-      - chromium-browser
+  chrome: stable
 
 cache:
   directories:
@@ -38,9 +40,9 @@ before_install:
   - export PATH="$JAVA_HOME/bin:$PATH"
   - java -version
   - mvn -version
+  - google-chrome-stable --headless --disable-gpu --remote-debugging-port=9222 http://localhost &
 
 
 
 script: 
   - mvn clean verify -Pjs-test
-  
