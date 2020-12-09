@@ -26,6 +26,7 @@ addons:
     packages:
       - openjdk-11-jdk
       - maven
+      - chromium-browser
 
 cache:
   directories:
@@ -38,5 +39,8 @@ before_install:
   - java -version
   - mvn -version
 
+
+
 script: 
-  - mvn clean verify -Pjs-test  
+  - mvn clean verify -Pjs-test
+  
