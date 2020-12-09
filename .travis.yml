@@ -19,9 +19,8 @@ os: linux
 dist: focal
 group: edge
 arch: arm64-graviton2
-virm: lxd
-arch:
-  - arm64
+virm: vm
+arch: arm64
 
 addons:
   apt:
@@ -40,10 +39,8 @@ before_install:
   - export PATH="$JAVA_HOME/bin:$PATH"
   - java -version
   - mvn -version
-  - ln -s `which which google-chrome-stable` /usr/bin/chromium 
+  - sudo ln -s `which which google-chrome-stable` /usr/bin/chromium 
   - google-chrome-stable --headless --disable-gpu --remote-debugging-port=9222 http://localhost &
-
-
 
 script: 
   - mvn clean verify -Pjs-test
