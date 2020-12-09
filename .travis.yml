@@ -27,7 +27,6 @@ addons:
     packages:
       - openjdk-11-jdk
       - maven
-  chrome: stable
 
 cache:
   directories:
@@ -39,8 +38,8 @@ before_install:
   - export PATH="$JAVA_HOME/bin:$PATH"
   - java -version
   - mvn -version
-  - sudo ln -s `which which google-chrome-stable` /usr/bin/chromium 
-  - google-chrome-stable --headless --disable-gpu --remote-debugging-port=9222 http://localhost &
+  - sudo apt-get install chromium-browser
 
 script: 
+  - cd testing/wicket-js-tests
   - mvn clean verify -Pjs-test
